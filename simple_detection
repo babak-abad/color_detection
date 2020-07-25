@@ -1,0 +1,33 @@
+import cv2
+import numpy as np
+
+# read image
+im = cv2.imread('d:/v.bmp', cv2.IMREAD_COLOR)
+
+# covert to hsv color space
+hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+# creating a color list
+# adjust it before use
+colors = {'blue': (np.array([110, 50, 50]), np.array([130, 255, 255])),
+          'velvet': (np.array([130, 50, 50]), np.array([179, 255, 255])),
+          'green': (np.array([40, 50, 50]), np.array([80, 255, 255]))}
+
+
+max_v = -1.0
+max_c = None
+
+# loop into colors for find best match
+for c in colors:
+    low = colors[c][0]
+    high = colors[c][1]
+    msk = cv2.inRange(hsv, low, high)
+    m = cv2.mean(msk)
+    if m[0] > max_v:
+        max_v = m[0]
+        max_c = c
+
+
+print('The most relative color of input image is %s width value of %d' % (max_c, max_v))
+
+# you can do more analysis here
