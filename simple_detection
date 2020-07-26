@@ -3,31 +3,39 @@ import numpy as np
 
 # read image
 im = cv2.imread('d:/v.bmp', cv2.IMREAD_COLOR)
-
+(n_row, n_col, _) = np.shape(im)
 # covert to hsv color space
 hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
 # creating a color list
 # adjust it before use
-colors = {'blue': (np.array([110, 50, 50]), np.array([130, 255, 255])),
-          'velvet': (np.array([130, 50, 50]), np.array([179, 255, 255])),
-          'green': (np.array([40, 50, 50]), np.array([80, 255, 255]))}
+# note that red color should be at the most bottom of list
+colors = {'blue': [(np.array([110, 50, 50]), np.array([130, 255, 255]))],
+          'velvet': [(np.array([130, 50, 50]), np.array([179, 255, 255]))],
+          'orange': [(np.array([10, 50, 50]), np.array([25, 255, 255]))],
+          'green': [(np.array([40, 50, 50]), np.array([80, 255, 255]))],
+          'red': [(np.array([0, 50, 50]), np.array([10, 255, 255])),
+                  (np.array([175, 50, 50]), np.array([179, 255, 255]))]}
 
-
-max_v = -1.0
+max_v = -1
 max_c = None
+res = {}
 
 # loop into colors for find best match
 for c in colors:
-    low = colors[c][0]
-    high = colors[c][1]
-    msk = cv2.inRange(hsv, low, high)
-    m = cv2.mean(msk)
-    if m[0] > max_v:
-        max_v = m[0]
+    s = 0
+    for bound in colors[c]:
+        low = bound[0]
+        high = bound[1]
+        msk = cv2.inRange(hsv, low, high)
+        s += cv2.countNonZero(msk)
+
+    m = s / float(n_row * n_col)
+
+    if m > max_v:
+        max_v = m
         max_c = c
 
-
-print('The most relative color of input image is %s width value of %d' % (max_c, max_v))
+print('The most relative color of input image is %s with value of %6.4f' % (max_c, max_v))
 
 # you can do more analysis here
